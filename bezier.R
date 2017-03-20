@@ -2,6 +2,7 @@ library(tidyverse)
 library(ggart)
 library(ggforce)
 library(tweenr)
+library(viridis)
 
 set.seed(101)
 
@@ -12,8 +13,8 @@ eps <- 0.25
 
 df1 <- data.frame(
   index = 1:n,
-  x = (cos(1:n))^3 + runif(n, -eps, eps),
-  y = (sin(1:n))^2 + runif(n, -eps, eps),
+  x = (cos(1:n))^2 + runif(n, -eps, eps),
+  y = (sin(1:n))^3 + runif(n, -eps, eps),
   type = factor(v[order(v)]),
   point = rep(c('end', 'control', 'end'), n / 3)
 )
@@ -29,13 +30,14 @@ df2 <- data.frame(
 df <- list(df1, df2)
 
 tf <- tween_states(df, tweenlength = 1, statelength = 0,
-                   ease = "linear",
-                   nframes = 100) %>%
+                   ease = "exponential-out",
+                   nframes = 200) %>%
   mutate(type = paste(type, "_", .frame, sep = ""))
 
 p <- ggplot() +
-  geom_bezier(aes(x = x, y = y, group = type, frame = .frame), tf, alpha = 0.4, size = 0.05) +
+  geom_bezier(aes(x = x, y = y, group = type, frame = .frame),
+              tf, alpha = 0.4, size = 0.05) +
   coord_equal() +
   theme_blankcanvas()
 
-ggsave("plots/plot001.png", p, width = 25, height = 25, units = "cm")
+ggsave("plots/plot003.png", p, width = 25, height = 25, units = "cm")
